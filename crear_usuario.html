@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Crear Usuario</title>
+  <style>
+    /* Reset simple */
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 40px auto;
+      max-width: 600px;
+      background: #fafafa;
+      color: #333;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    }
+
+    nav {
+      margin-bottom: 30px;
+      text-align: center;
+    }
+
+    nav a {
+      margin: 0 12px;
+      text-decoration: none;
+      color: #007BFF;
+      font-weight: 600;
+      transition: color 0.3s ease;
+    }
+
+    nav a:hover {
+      color: #0056b3;
+    }
+
+    h1, h2 {
+      text-align: center;
+      color: #222;
+      margin-bottom: 20px;
+    }
+
+    form {
+      background: #fff;
+      padding: 25px 30px;
+      border-radius: 8px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+      margin-bottom: 30px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 15px;
+      font-weight: 600;
+      font-size: 1rem;
+      color: #444;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 10px 14px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+      transition: border-color 0.3s ease;
+    }
+
+    input[type="text"]:focus {
+      outline: none;
+      border-color: #007BFF;
+      box-shadow: 0 0 5px rgba(0,123,255,0.4);
+    }
+
+    button {
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      border-radius: 6px;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      display: block;
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    .respuesta {
+      background-color: #e9f7ef;
+      border-left: 6px solid #28a745;
+      padding: 15px 20px;
+      border-radius: 6px;
+      font-size: 1rem;
+      margin-bottom: 30px;
+      color: #155724;
+      min-height: 60px;
+      line-height: 1.4;
+      box-shadow: 0 2px 8px rgba(40,167,69,0.1);
+    }
+
+    ul#listaUsuarios {
+      list-style: none;
+      padding: 0;
+    }
+
+    ul#listaUsuarios li {
+      background: #fff;
+      margin-bottom: 10px;
+      padding: 15px 20px;
+      border-radius: 6px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      font-weight: 600;
+      color: #444;
+      transition: transform 0.2s ease;
+    }
+
+    ul#listaUsuarios li:hover {
+      transform: translateX(5px);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Crear Usuario (Simulado)</h1>
+
+  <form id="formulario">
+    <label for="nombre">Nombre:</label>
+    <input type="text" id="nombre" required />
+    
+    <label for="trabajo">Trabajo:</label>
+    <input type="text" id="trabajo" required />
+    
+    <button type="submit">Crear Usuario</button>
+  </form>
+
+  <div id="respuesta" class="respuesta"></div>
+
+  <h2>Usuarios creados:</h2>
+  <ul id="listaUsuarios"></ul>
+
+  <script>
+    const form = document.getElementById('formulario');
+    const respuestaDiv = document.getElementById('respuesta');
+    const listaUsuarios = document.getElementById('listaUsuarios');
+
+    const usuarios = [];
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const nombre = document.getElementById('nombre').value.trim();
+      const trabajo = document.getElementById('trabajo').value.trim();
+
+      if (!nombre || !trabajo) {
+        respuestaDiv.textContent = 'Por favor completa todos los campos.';
+        return;
+      }
+
+      const datos = { name: nombre, job: trabajo };
+
+      try {
+        const res = await fetch('https://reqres.in/api/users', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(datos)
+        });
+
+        await res.json();
+
+        respuestaDiv.innerHTML = `
+          <strong>Respuesta del servidor:</strong><br>
+          Nombre: ${datos.name}<br>
+          Trabajo: ${datos.job}<br>
+        `;
+
+        usuarios.push({ nombre: datos.name, trabajo: datos.job });
+
+        actualizarListaUsuarios();
+
+        // Limpiar formulario
+        form.reset();
+
+      } catch (error) {
+        respuestaDiv.textContent = 'Error al crear el usuario.';
+      }
+    });
+
+    function actualizarListaUsuarios() {
+      listaUsuarios.innerHTML = '';
+      usuarios.forEach((usuario, index) => {
+        const li = document.createElement('li');
+        li.textContent = `#${index + 1} - Nombre: ${usuario.nombre}, Trabajo: ${usuario.trabajo}`;
+        listaUsuarios.appendChild(li);
+      });
+    }
+  </script>
+</body>
+</html>
