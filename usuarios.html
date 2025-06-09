@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Usuarios</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <nav>
+        <ul>
+            <li><a href="index.html">Inicio</a></li>
+            <li><a href="usuarios.html">Lista de Usuarios</a></li>
+            <li><a href="detalle-usuario.html">Detalle de Usuario</a></li>
+            <li><a href="crear-usuario.html">Crear Usuario</a></li>
+            <li><a href="recursos.html">Lista de Recursos</a></li>
+            <li><a href="usuario-aleatorio.html">Usuario Aleatorio</a></li>
+        </ul>
+    </nav>
+    
+    <div class="container">
+        <h1>Lista de Usuarios</h1>
+        <div id="users-container"></div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            fetch('https://reqres.in/api/users?page=1')
+                .then(response => response.json())
+                .then(data => {
+                    const usersContainer = document.getElementById('users-container');
+                    
+                    data.data.forEach(user => {
+                        const userCard = document.createElement('div');
+                        userCard.className = 'card';
+                        userCard.innerHTML = `
+                            <img src="${user.avatar}" alt="${user.first_name}" class="user-avatar">
+                            <h2>${user.first_name} ${user.last_name}</h2>
+                            <p>Email: ${user.email}</p>
+                        `;
+                        usersContainer.appendChild(userCard);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById('users-container').innerHTML = 
+                        '<p>Error al cargar los usuarios. Intenta nuevamente.</p>';
+                });
+        });
+    </script>
+</body>
+</html>
